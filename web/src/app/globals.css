@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* Identidade visual MindFocus (design/brand/mindfocus-design.pdf) */
+@theme {
+  --color-brand-blue: #3d8fcb;
+  --color-brand-blue-dark: #2f74a8;
+  --color-brand-green: #61c24e;
+  --color-brand-green-dark: #4ea33d;
+  --color-cream: #fbf3e3;
+  --color-sand: #eac178;
+  --color-sand-dark: #d4a95b;
+  --color-ink: #233a5c;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f4e8d1;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-sand);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-sand-dark);
+}

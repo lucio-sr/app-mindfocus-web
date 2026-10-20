@@ -1,0 +1,15 @@
+# Supabase CLI
+supabase/.temp/
+supabase/.branches/
+supabase/.env
+supabase/signing_keys.json
+
+# Segredos
+.env
+.env.*
+!.env.example
+
+# SO / editores
+.DS_Store
+.vscode/
+.idea/
