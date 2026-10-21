@@ -238,10 +238,11 @@ select id from public.profiles where cpf = '00000000000';
 ### Fase 6 — Migração de dados — **só pacientes, mais adiante** (decisão de 20/10/2026)
 - Não haverá contas migradas do sistema Flask (colaboradores e responsáveis se cadastram de novo).
 - [x] Instituição **MindFocus** criada pelo painel (superadmin como admin).
-- [ ] Migrar os pacientes e o histórico para a MindFocus (21/10/2026: script pronto e testado
-      localmente com o dump de 06/08/2026; falta rodar em produção):
+- [x] Pacientes e histórico migrados para a MindFocus em 21/10/2026 (dump de 06/08/2026): 135 pacientes,
+      115 sessões (575 resultados), 106 logs, 122 SNAP-IV, 220 testes, 134 responsáveis guardados.
       `python3 -I scripts/migrate-legacy/build_import.py <dump.sql> <fora-do-repo>/import.sql` gera o SQL
-      (contém dados pessoais; apagar depois). Importa crianças, sessões/resultados/logs do jogo, SNAP-IV
+      (contém dados pessoais; apagar depois). Com `--partes`, gera arquivos de até ~1 MB para
+      `supabase db query --linked -f` (o limite da API é menor que o SQL inteiro). Importa crianças, sessões/resultados/logs do jogo, SNAP-IV
       do chatbot (canal `legacy`) e testes neuropsicológicos; é idempotente. Para o corte final, gerar de
       novo com um dump recente.
 - Responsáveis **sem acesso por enquanto** (decisão de 21/10/2026): os dados ficam em
