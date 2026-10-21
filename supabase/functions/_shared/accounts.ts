@@ -3,7 +3,7 @@
 
 import { adminClient } from "./clients.ts";
 import { isEmail, isValidCpf, onlyDigits } from "./br.ts";
-import { allowedOrigins, HttpError } from "./http.ts";
+import { HttpError, isAllowedOrigin } from "./http.ts";
 
 export type Person = { full_name: string; cpf: string; email: string };
 
@@ -16,7 +16,7 @@ export type Delivery = "email" | "link" | "none";
 export type Account = { userId: string; created: boolean; actionLink?: string };
 
 export function siteUrl(): string {
-  return (Deno.env.get("SITE_URL") ?? "https://mindfocus.online").replace(/\/+$/, "");
+  return (Deno.env.get("SITE_URL") ?? "https://app.mindfocus.com.br").replace(/\/+$/, "");
 }
 
 // Aceita só redirecionamentos para o site ou para as origens permitidas do frontend (ALLOWED_ORIGINS).
@@ -25,8 +25,7 @@ export function safeRedirect(value: unknown, defaultPath: string): string {
   if (typeof value !== "string" || value === "") return fallback;
   try {
     const url = new URL(value);
-    const allowed = [new URL(siteUrl()).origin, ...allowedOrigins()];
-    return allowed.includes(url.origin) ? url.toString() : fallback;
+    return url.origin === new URL(siteUrl()).origin || isAllowedOrigin(url.origin) ? url.toString() : fallback;
   } catch {
     return fallback;
   }

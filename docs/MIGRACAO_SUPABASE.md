@@ -192,7 +192,7 @@ select id from public.profiles where cpf = '00000000000';
   (conta sem senha; a pessoa usa "esqueci a senha" com o CPF) e `link` (o link do convite volta na
   resposta; só superadmin, útil enquanto não há SMTP).
 - [x] Deploy em 20/10/2026 (`supabase functions deploy --use-api` e `supabase config push`): site_url
-  `https://mindfocus.online`, cadastro público desligado, senha mínima de 8 com letras e números,
+  `https://mindfocus.online` (trocado em 21/10/2026 por `https://app.mindfocus.com.br`, também secret `SITE_URL`), cadastro público desligado, senha mínima de 8 com letras e números,
   `sign_in_sign_ups = 1000`. Atenção: `supabase config push` aplica sem pedir confirmação; use
   `supabase config diff` para só comparar. E `[auth.email] enable_signup` precisa ficar `true`: ele liga
   o provedor de e-mail inteiro (com ele `false`, nenhum login funciona). O cadastro público é

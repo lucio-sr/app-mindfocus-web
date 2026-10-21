@@ -1,6 +1,7 @@
 // Resposta JSON, CORS e tratamento de erros comuns a todas as Edge Functions.
 
 const DEFAULT_ORIGINS = [
+  "https://app.mindfocus.com.br",
   "https://mindfocus.online",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
@@ -8,9 +9,23 @@ const DEFAULT_ORIGINS = [
 
 // Origens do frontend (CORS e destinos aceitos nos links de convite/recuperação).
 // Secret ALLOWED_ORIGINS (lista separada por vírgula) substitui a lista padrão.
+// Secret ALLOWED_ORIGIN_SUFFIXES aceita, além disso, qualquer origem https cujo host termine com um dos
+// sufixos — usado para as previews da Vercel (ex.: "-lucios-projects-11c4892e.vercel.app", exclusivo do time).
 export function allowedOrigins(): string[] {
   const extra = Deno.env.get("ALLOWED_ORIGINS");
   return extra ? extra.split(",").map((o) => o.trim()).filter(Boolean) : DEFAULT_ORIGINS;
+}
+
+export function isAllowedOrigin(origin: string): boolean {
+  if (allowedOrigins().includes(origin)) return true;
+  const suffixes = (Deno.env.get("ALLOWED_ORIGIN_SUFFIXES") ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  if (suffixes.length === 0) return false;
+  try {
+    const url = new URL(origin);
+    return url.protocol === "https:" && url.origin === origin && suffixes.some((s) => url.hostname.endsWith(s));
+  } catch {
+    return false;
+  }
 }
 
 function corsHeaders(req: Request): Record<string, string> {
@@ -20,7 +35,7 @@ function corsHeaders(req: Request): Record<string, string> {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Vary": "Origin",
   };
-  if (origin && allowedOrigins().includes(origin)) headers["Access-Control-Allow-Origin"] = origin;
+  if (origin && isAllowedOrigin(origin)) headers["Access-Control-Allow-Origin"] = origin;
   return headers;
 }
 
