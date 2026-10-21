@@ -238,8 +238,15 @@ select id from public.profiles where cpf = '00000000000';
 ### Fase 6 — Migração de dados — **só pacientes, mais adiante** (decisão de 20/10/2026)
 - Não haverá contas migradas do sistema Flask (colaboradores e responsáveis se cadastram de novo).
 - [x] Instituição **MindFocus** criada pelo painel (superadmin como admin).
-- [ ] Migrar os pacientes (e, se fizer sentido, o histórico dos jogos) para a MindFocus. Precisa de um
-      `pg_dump` da produção; o vínculo com responsáveis é refeito pelo painel.
+- [ ] Migrar os pacientes e o histórico para a MindFocus (21/10/2026: script pronto e testado
+      localmente com o dump de 06/08/2026; falta rodar em produção):
+      `python3 -I scripts/migrate-legacy/build_import.py <dump.sql> <fora-do-repo>/import.sql` gera o SQL
+      (contém dados pessoais; apagar depois). Importa crianças, sessões/resultados/logs do jogo, SNAP-IV
+      do chatbot (canal `legacy`) e testes neuropsicológicos; é idempotente. Para o corte final, gerar de
+      novo com um dump recente.
+- Responsáveis **sem acesso por enquanto** (decisão de 21/10/2026): os dados ficam em
+  `private.legacy_guardians` (fora da API). Mais adiante, junto com a área do responsável, criar as
+  contas a partir dessa tabela e mover o vínculo para `patient_guardians`.
 
 ### Fase 7 — Cutover (≈1 semana)
 - Congelar escrita no Flask, ETL final, publicar clientes, trocar DNS.
