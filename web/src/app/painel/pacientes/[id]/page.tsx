@@ -4,6 +4,7 @@ import { ChevronRight, ClipboardList, Paperclip, Pencil, Plus } from "lucide-rea
 import { Suspense } from "react";
 import { GamePin } from "@/components/patients/game-pin";
 import { SnapIvPanel, type SnapRequest, type SnapResponse } from "@/components/questionnaire/snap-iv-panel";
+import { ReportsPanel, type ReportItem } from "@/components/reports/reports-panel";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { LinkButton } from "@/components/ui/link-button";
@@ -63,6 +64,7 @@ async function PatientDetail({ params }: Pick<PageProps<"/painel/pacientes/[id]"
     { data: tests },
     { data: snapResponses },
     { data: snapRequests },
+    { data: reports },
   ] = await Promise.all([
     supabase.from("patients").select("*").eq("id", id).eq("institution_id", current!.institution_id).maybeSingle(),
     supabase
@@ -100,8 +102,18 @@ async function PatientDetail({ params }: Pick<PageProps<"/painel/pacientes/[id]"
       .is("revoked_at", null)
       .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false }),
+    supabase
+      .from("reports")
+      .select("id, kind, title, created_at, storage_path, created_by")
+      .eq("patient_id", id)
+      .order("created_at", { ascending: false }),
   ]);
   if (!patient) notFound();
+
+  const authorIds = [...new Set((reports ?? []).map((r) => r.created_by).filter((v): v is string => Boolean(v)))];
+  const { data: authors } = authorIds.length
+    ? await supabase.from("profiles").select("id, full_name").in("id", authorIds)
+    : { data: [] as { id: string; full_name: string }[] };
 
   const firstName = patient.full_name.split(" ")[0];
   const guardianList = ((guardians ?? []) as unknown as Guardian[]).filter((g) => g.guardian);
@@ -204,6 +216,25 @@ async function PatientDetail({ params }: Pick<PageProps<"/painel/pacientes/[id]"
                   expires_at: r.expires_at,
                   created_at: r.created_at,
                   guardian: guardianList.find((g) => g.guardian?.id === r.guardian_id)?.guardian?.full_name ?? "—",
+                }),
+              )}
+            />
+          </Card>
+
+          <Card title="Relatório e devolutiva">
+            <ReportsPanel
+              patientId={patient.id}
+              canGenerate={canRegisterTests(current!.role)}
+              canDelete={current!.role === "admin"}
+              hasSession={(sessions as unknown as Session[] | null)?.some((s) => s.results.length > 0) ?? false}
+              reports={(reports ?? []).map(
+                (r): ReportItem => ({
+                  id: r.id,
+                  kind: r.kind,
+                  title: r.title,
+                  created_at: r.created_at,
+                  storage_path: r.storage_path,
+                  author: authors?.find((a) => a.id === r.created_by)?.full_name ?? null,
                 }),
               )}
             />

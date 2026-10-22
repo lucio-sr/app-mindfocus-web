@@ -230,8 +230,17 @@ select id from public.profiles where cpf = '00000000000';
 - **landingpage:** apenas links.
 - **Unity:** novos endpoints; remover credenciais fixas do `PinGenerator.cs`; corrigir `https://` do `LoginManager`.
 
-### Fase 5 — Laudos e pipeline (≈1–2 semanas)
-- Microserviço Python valida o JWT do Supabase e lê com o token do usuário (RLS vale); PDF no Storage; logo da instituição no laudo.
+### Fase 5 — Laudos e pipeline (≈1–2 semanas) — **em andamento**
+- [x] Relatório e devolutiva no app web (21/10/2026), **sem microserviço Python/LaTeX** (decisão do dia):
+      rota `POST /api/pacientes/[id]/relatorios` (Next.js, sessão do usuário, RLS vale) → texto da IA
+      (OpenAI `gpt-4o-mini`, como antes; `OPENAI_API_KEY` só no servidor) → PDF com `@react-pdf/renderer` →
+      bucket `reports` + tabela `reports`. "Relatório" (`summary`) = jogo, histórico e SNAP-IV; "Devolutiva"
+      (`general`) = TAVIS/FDT/NEUPSILIN, jogo (análise idiográfica) e textos da pesquisa.
+- A IA não recebe nome, CPF, nascimento, renda nem responsáveis; textos livres passam por `scrub`
+  (o sistema anterior enviava tudo). Média do jogo só com jogos realizados (antes, não jogado = 0%).
+- Textos da pesquisa, CAAE, link das referências e logos (instituição e parceiros) configuráveis em
+  Instituição → Relatório e devolutiva (`institution_report_settings`); a MindFocus já tem os textos do
+  sistema anterior. Assinatura = profissional que gera o documento (nome e CRP do perfil).
 - Pipeline lê de view pseudonimizada (sem CPF/nome); remover CSVs com dados pessoais do repositório.
 - Modelo atual registrado como `analysis_models` padrão.
 

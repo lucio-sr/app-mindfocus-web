@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.18"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       analysis_models: {
@@ -488,6 +513,62 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institution_report_settings: {
+        Row: {
+          closing_notes: string[]
+          cover_text: string | null
+          ethics_statement: string | null
+          institution_id: string
+          intro_text: string | null
+          location: string | null
+          partner_logo_paths: string[]
+          procedures_text: string | null
+          references_url: string | null
+          study_description: string | null
+          subtitle: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          closing_notes?: string[]
+          cover_text?: string | null
+          ethics_statement?: string | null
+          institution_id: string
+          intro_text?: string | null
+          location?: string | null
+          partner_logo_paths?: string[]
+          procedures_text?: string | null
+          references_url?: string | null
+          study_description?: string | null
+          subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          closing_notes?: string[]
+          cover_text?: string | null
+          ethics_statement?: string | null
+          institution_id?: string
+          intro_text?: string | null
+          location?: string | null
+          partner_logo_paths?: string[]
+          procedures_text?: string | null
+          references_url?: string | null
+          study_description?: string | null
+          subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_report_settings_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: true
+            referencedRelation: "institutions"
             referencedColumns: ["id"]
           },
         ]
@@ -973,6 +1054,7 @@ export type Database = {
       }
       reports: {
         Row: {
+          ai_model: string | null
           analysis_run_id: string | null
           created_at: string
           created_by: string | null
@@ -981,9 +1063,12 @@ export type Database = {
           kind: Database["public"]["Enums"]["report_kind"]
           notes: string | null
           patient_id: string
+          session_id: string | null
           storage_path: string
+          title: string | null
         }
         Insert: {
+          ai_model?: string | null
           analysis_run_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -992,9 +1077,12 @@ export type Database = {
           kind: Database["public"]["Enums"]["report_kind"]
           notes?: string | null
           patient_id: string
+          session_id?: string | null
           storage_path: string
+          title?: string | null
         }
         Update: {
+          ai_model?: string | null
           analysis_run_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -1003,7 +1091,9 @@ export type Database = {
           kind?: Database["public"]["Enums"]["report_kind"]
           notes?: string | null
           patient_id?: string
+          session_id?: string | null
           storage_path?: string
+          title?: string | null
         }
         Relationships: [
           {
@@ -1019,6 +1109,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "patients"
             referencedColumns: ["institution_id", "id"]
+          },
+          {
+            foreignKeyName: "reports_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1280,6 +1377,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       access_code_purpose: ["game", "simulator"],
