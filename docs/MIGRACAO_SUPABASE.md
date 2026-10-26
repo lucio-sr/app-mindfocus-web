@@ -206,6 +206,13 @@ select id from public.profiles where cpf = '00000000000';
   (convite, recuperação, troca de e-mail e aviso de senha alterada); os links usam
   `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=...`, tratados pelo `web/`.
 
+- [ ] **Baixa prioridade:** desligar o provedor de SMS (Twilio) no Auth de produção. Está ligado no projeto
+  (não foi configurado pelo repositório; conta a confirmar no painel); o `config.toml` o declara
+  desligado, mas o `supabase config push` não consegue desligar o provedor ativo. Fazer pelo painel:
+  Authentication → Sign In / Providers → Phone → desligar. Risco baixo: o cadastro por telefone já está
+  desligado (`[auth.sms] enable_signup = false`) e a plataforma não usa SMS. Depois,
+  `supabase config diff` deve mostrar 0 diferenças.
+
 ### Fase 3 — Backend restante (≈2 semanas)
 - Edge Functions `pin-login`, `simulator-login`, `ingest-game`, `ingest-logs`, `time`.
 - Rate limiting de login; validação de payload; testes de paridade com cada rota antiga.
