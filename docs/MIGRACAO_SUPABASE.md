@@ -199,7 +199,12 @@ select id from public.profiles where cpf = '00000000000';
   desligado só por `[auth] enable_signup = false`.
 - [x] Frontend `web/` (Next.js): `/entrar`, `/esqueci-senha`, `/definir-senha`, `/redefinir-senha`, `/inicio`
   e áreas provisórias por perfil; proteção de rotas em `src/proxy.ts`.
-- [ ] Templates de e-mail do Auth em português; SMTP do Resend configurado no Auth.
+- [x] E-mails do Auth pelo Resend (21/10/2026), funcionando em produção: SMTP `smtp.resend.com:465`,
+  usuário `resend`, senha `env(RESEND_API_KEY)` (em `supabase/.env`, fora do git), remetente
+  `naoresposta@updates.mindfocus.com.br` (domínio `updates.mindfocus.com.br` verificado no Resend),
+  limite `email_sent = 60`/h. Templates em português no visual da plataforma em `supabase/templates/`
+  (convite, recuperação, troca de e-mail e aviso de senha alterada); os links usam
+  `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=...`, tratados pelo `web/`.
 
 ### Fase 3 — Backend restante (≈2 semanas)
 - Edge Functions `pin-login`, `simulator-login`, `ingest-game`, `ingest-logs`, `time`.
@@ -246,7 +251,7 @@ select id from public.profiles where cpf = '00000000000';
 
 ### Fase 6 — Migração de dados — **só pacientes, mais adiante** (decisão de 20/10/2026)
 - Não haverá contas migradas do sistema Flask (colaboradores e responsáveis se cadastram de novo).
-- [x] Instituição **MindFocus** criada pelo painel (superadmin como admin).
+- [x] Instituição **MindFocus** criada pelo painel (admin = conta do superadmin; há também uma conta como colaborador(a)).
 - [x] Pacientes e histórico migrados para a MindFocus em 21/10/2026 (dump de 06/08/2026): 135 pacientes,
       115 sessões (575 resultados), 106 logs, 122 SNAP-IV, 220 testes, 134 responsáveis guardados.
       `python3 -I scripts/migrate-legacy/build_import.py <dump.sql> <fora-do-repo>/import.sql` gera o SQL
